@@ -12,7 +12,15 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: false,
   },
-
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'rickandmortyapi.com',
+        pathname: '/api/character/avatar/**',
+      },
+    ],
+  },
   compiler: {
     // For other options, see https://styled-components.com/docs/tooling#babel-plugin
     styledComponents: true,
