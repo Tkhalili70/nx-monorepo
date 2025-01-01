@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CharacterType } from '../components/Home/Home';
+import { useLoader } from '../contexts/LoaderContext';
 
 export function useCharacterList(initialPage = 1, initialPageSize = 20) {
   const [characterList, setCharacterList] = useState<CharacterType[]>([]);
@@ -11,10 +12,10 @@ export function useCharacterList(initialPage = 1, initialPageSize = 20) {
     pageSize: initialPageSize,
     total: 0,
   });
-  const [loading, setLoading] = useState(false);
+  const {isLoading, setIsLoading}= useLoader();
 
   const fetchCharacter = async (page = pagination.current, pageSize = pagination.pageSize, filterParams = filters) => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const queryString = new URLSearchParams({ ...filterParams, page: String(page), pageSize: String(pageSize) }).toString();
       const res = await fetch(`https://rickandmortyapi.com/api/character/?${queryString}`);
@@ -42,7 +43,7 @@ export function useCharacterList(initialPage = 1, initialPageSize = 20) {
       setCharacterList([]);
       setFilteredCharacterList([]);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -52,16 +53,18 @@ export function useCharacterList(initialPage = 1, initialPageSize = 20) {
 
   // Callback to update pagination state
   const updatePagination = (page: number, pageSize: number) => {
+    setIsLoading(true);
     setPagination((prev) => ({ ...prev, current: page, pageSize }));
   };
   const applyFilters = (newFilters: Record<string, string>) => {
+    setIsLoading(true);
     setFilters(newFilters);
     setPagination((prev) => ({ ...prev, current: 1 })); // Reset to the first page
   };
   return { characterList: filteredCharacterList,
     totalCount,
     pagination,
-    loading,
+    isLoading,
     updatePagination,
     applyFilters,
   };

@@ -50,7 +50,7 @@ export type ValidFieldNames =
   | "gender"
 
 export default function Home() {
-  const { characterList, pagination, loading, updatePagination, applyFilters } = useCharacterList();
+  const { characterList, pagination, isLoading, updatePagination, applyFilters } = useCharacterList();
   const schema = z.object({
     name: z.string().min(1, "Name is required"),
     status: z.string().optional(),
@@ -189,7 +189,7 @@ export default function Home() {
           <Table<CharacterType>
             columns={columns}
             dataSource={characterList}
-            loading={loading}
+            loading={isLoading}
             pagination={pagination}
             onChange={handlePaginationChange}
           />

@@ -8,12 +8,16 @@ import {
 } from './styles';
 import Image from "next/image";
 import { useCharacterDetail } from '../../hooks/useCharacterDetail';
-import Link from 'next/link';
+import { useLoader } from '../../contexts/LoaderContext';
 
 export default function Page({params}: { params: { id: number } }) {
+  const {isLoading , setIsLoading} = useLoader();
 const { characterDetail , error } = useCharacterDetail(params.id);
   if (!characterDetail) {
-    return <div>Loading character details...</div>;
+    setIsLoading(true);
+    return <div>Loading character details...</div>
+  }else {
+    setIsLoading(false);
   }
   if (error) {
     return (
