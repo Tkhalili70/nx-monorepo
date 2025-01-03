@@ -4,18 +4,19 @@ import {
   StyledCharacterSec,
   StyledCharacterName,
   StyledInfoSection,
-  EpisodeContainer, EpisodeSection, StyledCharacterContainer, StyledLink
+  EpisodeContainer, EpisodeSection, StyledCharacterContainer, StyledLink, StyledLoading
 } from './styles';
 import Image from "next/image";
 import { useCharacterDetail } from '../../hooks/useCharacterDetail';
 import { useLoader } from '../../contexts/LoaderContext';
 
+
 export default function Page({params}: { params: { id: number } }) {
-  const {isLoading , setIsLoading} = useLoader();
+  const {setIsLoading} = useLoader();
 const { characterDetail , error } = useCharacterDetail(params.id);
   if (!characterDetail) {
     setIsLoading(true);
-    return <div>Loading character details...</div>
+    return <StyledLoading >Loading character details...</StyledLoading>
   }else {
     setIsLoading(false);
   }

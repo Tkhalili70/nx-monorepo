@@ -1,6 +1,10 @@
 import styled from "styled-components";
 import Link from 'next/link';
-
+export const StyledLoading = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
 export const StyledCharacterContainer = styled.div`
   width: 100%;
   max-width: 1100px;

@@ -28,11 +28,16 @@ export function useCharacterList(initialPage = 1, initialPageSize = 20) {
         }));
         setCharacterList(formattedData);
         setFilteredCharacterList(formattedData);
+        const generatePageSizeOptions = (total: number) => {
+          const baseOptions = [10, 20, 50, 100];
+          return total > 100 ? [...baseOptions, total] : baseOptions;
+        };
         setPagination((prev) => ({
           ...prev,
           current: page,
           pageSize,
           total: data.info.count,
+          pageSizeOptions:generatePageSizeOptions(data.info.count)
         }));
       } else {
         setCharacterList([]);
