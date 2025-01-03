@@ -5,7 +5,6 @@ import { apiGetCharacterList } from '../services/apiCharacter';
 
 export function useCharacterList(initialPage = 1, initialPageSize = 20) {
   const [characterList, setCharacterList] = useState<CharacterType[]>([]);
-  const [filteredCharacterList, setFilteredCharacterList] = useState<CharacterType[]>([]);
   const [filters, setFilters] = useState<Record<string, string>>({});
   const [totalCount, setTotalCount] = useState<number>(0);
   const [pagination, setPagination] = useState({
@@ -27,7 +26,6 @@ export function useCharacterList(initialPage = 1, initialPageSize = 20) {
           key: character.id.toString(),
         }));
         setCharacterList(formattedData);
-        setFilteredCharacterList(formattedData);
         const generatePageSizeOptions = (total: number) => {
           const baseOptions = [10, 20, 50, 100];
           return total > 100 ? [...baseOptions, total] : baseOptions;
@@ -41,12 +39,10 @@ export function useCharacterList(initialPage = 1, initialPageSize = 20) {
         }));
       } else {
         setCharacterList([]);
-        setFilteredCharacterList([]);
       }
     } catch (err) {
       console.error(err);
       setCharacterList([]);
-      setFilteredCharacterList([]);
     } finally {
       setIsLoading(false);
     }
@@ -56,7 +52,6 @@ export function useCharacterList(initialPage = 1, initialPageSize = 20) {
     fetchCharacter();
   }, [pagination.current, pagination.pageSize, filters]);
 
-  // Callback to update pagination state
   const updatePagination = (page: number, pageSize: number) => {
     setIsLoading(true);
     setPagination((prev) => ({ ...prev, current: page, pageSize }));
@@ -66,7 +61,7 @@ export function useCharacterList(initialPage = 1, initialPageSize = 20) {
     setFilters(newFilters);
     setPagination((prev) => ({ ...prev, current: 1 })); // Reset to the first page
   };
-  return { characterList: filteredCharacterList,
+  return { characterList: characterList,
     totalCount,
     pagination,
     isLoading,

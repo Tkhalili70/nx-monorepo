@@ -117,7 +117,6 @@ export default function Home() {
       width: '15%',
       render: (_, record) => (
         <Space size="middle">
-          {/*<a>Invite {record.name}</a>*/}
           <Link href={`/character/${record.id}`}>Show Detail</Link>
         </Space>
       ),
