@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { CharacterType } from '../components/Home/Home';
 import { useLoader } from '../contexts/LoaderContext';
+import { apiGetCharacterList } from '../services/apiCharacter';
 
 export function useCharacterList(initialPage = 1, initialPageSize = 20) {
   const [characterList, setCharacterList] = useState<CharacterType[]>([]);
@@ -18,13 +19,12 @@ export function useCharacterList(initialPage = 1, initialPageSize = 20) {
     setIsLoading(true);
     try {
       const queryString = new URLSearchParams({ ...filterParams, page: String(page), pageSize: String(pageSize) }).toString();
-      const res = await fetch(`https://rickandmortyapi.com/api/character/?${queryString}`);
-      const data = await res.json();
+      const data = await apiGetCharacterList(queryString);
       setTotalCount(data.info.count);
       if (Array.isArray(data.results)) {
         const formattedData = data.results.map((character: CharacterType) => ({
           ...character,
-          key: character.id.toString(), // Assign the unique key
+          key: character.id.toString(),
         }));
         setCharacterList(formattedData);
         setFilteredCharacterList(formattedData);

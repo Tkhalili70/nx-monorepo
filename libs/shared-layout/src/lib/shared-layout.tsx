@@ -3,26 +3,44 @@ import React, { ReactNode } from 'react';
 import "./styles.scss"
 import LoaderPage from '../../../ui-components/src/lib/LoaderFullPage';
 import { useLoader } from '../../../../apps/my-next-app/src/app/contexts/LoaderContext';
+import styled from 'styled-components';
 interface SharedLayoutProps {
   children: ReactNode;
 }
-
+const StyledContainer = styled.div`
+display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+`
+const StyledHeader = styled.header`
+  background: #6200ea;
+  color: #fff;
+  padding: 1rem;
+`
+const StyledFooter = styled.footer`
+  background: #6200ea;
+  color: #fff;
+  padding: 1rem;
+`
+const StyledMain = styled.main`
+  padding: 1rem;
+`
 export const SharedLayout: React.FC<SharedLayoutProps> = ({ children }) => {
   const { isLoading } = useLoader();
 
   return (
-  <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <header style={{ background: '#6200ea', color: '#fff', padding: '1rem' }}>
+  <StyledContainer >
+      <StyledHeader >
         <h1>Shared Header</h1>
-      </header>
-      <main style={{ flex: 1, padding: '1rem' }}>
+      </StyledHeader>
+      <StyledMain >
         {isLoading && <LoaderPage />}
         {children}
-      </main>
-      <footer style={{ background: '#6200ea', color: '#fff', padding: '1rem' }}>
+      </StyledMain>
+      <StyledFooter >
         Shared Footer
-      </footer>
-    </div>
+      </StyledFooter>
+    </StyledContainer>
   );
 };
 
