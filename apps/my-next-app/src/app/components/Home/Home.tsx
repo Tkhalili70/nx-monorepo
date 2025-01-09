@@ -1,5 +1,5 @@
 "use client"
-import { Space, Table, TableProps } from 'antd';
+import {  Space, Table, TableProps } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
@@ -7,15 +7,16 @@ import {
   EmptyResult,
   StyledButton,
   StyledButtonContainer,
-  StyledError,
   StyledForm,
-  StyledInput,
-  StyledInputWithError, StyledSelect
 } from './styles';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect, useState } from 'react';
 import { useCharacterList } from '../../hooks/useCharacterList';
+import Input from '../../../../../../libs/ui-kit/src/lib/input/input';
+import Select from '../../../../../../libs/ui-kit/src/lib/select/select';
+import Spinner from '../../../../../../libs/ui-kit/src/lib/spinner/spinner';
+import Heading from '../../../../../../libs/ui-kit/src/lib/heading/heading';
 
 export interface CharacterType {
   key: string;
@@ -127,13 +128,14 @@ export default function Home() {
     }
   }, [characterList]);
   if (isLoading) {
-    return  'Loading.....'
+    return <div> <Spinner /> Loading.....</div>
   }
   if (error) {
     return 'An Error occurred! try again'
   }
 
   async function handleSubmitBtn(data: FormSearchInput) {
+    console.log(data , 'data')
     const filteredData = Object.fromEntries(
       Object.entries(data).filter(([_, value]) => value.trim() !== '')
     );
@@ -141,52 +143,59 @@ export default function Home() {
   }
   return (
     <>
+      <Heading  as='h1'>Character List</Heading>
       <StyledForm onSubmit={handleSubmit(handleSubmitBtn)}>
-        <StyledInputWithError>
-          <StyledInput
-            {...register('name')}
-            placeholder="Name"
-          />
-          {errors.name && <StyledError>{errors.name.message}</StyledError>}
+        <Input
+          {...register('name', { required: 'Name is required' })}
+          placeholder="Name"
+          haserror={!!errors.name}
+          error={errors.name?.message || ''}
+        />
 
-        </StyledInputWithError>
-        <StyledInputWithError>
-          <StyledSelect {...register('status')}>
-            <option value="">Select Status</option>
-            <option value="Alive">Alive</option>
-            <option value="Dead">Dead</option>
-            <option value="unknown">unknown</option>
-          </StyledSelect>
-        </StyledInputWithError>
-        <StyledInputWithError>
-          <StyledSelect {...register('gender')}>
-            <option value="">Select gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-          </StyledSelect>
-        </StyledInputWithError>
-        <StyledInputWithError>
-          <StyledSelect {...register('species')}>
-            <option value="">Select Species</option>
-            <option value="Human">Human</option>
-            <option value="Mythological Creature">Mythological Creature</option>
-            <option value="Alien">Alien</option>
-          </StyledSelect>
-        </StyledInputWithError>
+        <Select
+          {...register('status')}
+          haserror={!!errors.status}
+          error={errors.status?.message || ''}
+        >
+          <option value="">Select Status</option>
+          <option value="Alive">Alive</option>
+          <option value="Dead">Dead</option>
+          <option value="Unknown">Unknown</option>
+        </Select>
+        <Select
+          {...register('gender')}
+          haserror={!!errors.gender}
+          error={errors.gender?.message || ''}
+        >
+          <option value="">Select gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </Select>
+        <Select
+          {...register('species')}
+          haserror={!!errors.species}
+          error={errors.species?.message || ''}
+        >
+          <option value="">Select Species</option>
+          <option value="Human">Human</option>
+          <option value="Mythological Creature">Mythological Creature</option>
+          <option value="Alien">Alien</option>
+        </Select>
 
         <StyledButtonContainer>
           <StyledButton
             type="reset"
             value="Reset"
             onClick={() => {
-              setFilterParams({})
+              setFilterParams({});
             }}
           />
           <StyledButton type="submit" value="Submit" />
         </StyledButtonContainer>
-
       </StyledForm>
-      {characterList?.results?.length == 0 && <EmptyResult>No Data was found!</EmptyResult>}
+      {characterList?.results?.length == 0 && (
+        <EmptyResult>No Data was found!</EmptyResult>
+      )}
       {characterList?.results?.length > 0 && (
         <>
           <Table<CharacterType>

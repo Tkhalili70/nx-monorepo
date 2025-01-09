@@ -6,6 +6,7 @@ import { useLoader } from '../../../../apps/my-next-app/src/app/contexts/loader-
 import styled from 'styled-components';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import GlobalStyles from '../../../../global-styles';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries:{
@@ -38,21 +39,24 @@ export const SharedLayout: React.FC<SharedLayoutProps> = ({ children }) => {
   const { isLoading } = useLoader();
 
   return (
-  <StyledContainer >
-      <StyledHeader >
-        <h1>Shared Header</h1>
-      </StyledHeader>
-      <StyledMain >
-        <QueryClientProvider client={queryClient}>
-          <ReactQueryDevtools initialIsOpen={false}/>
-        {isLoading && <LoaderPage />}
-        {children}
-        </QueryClientProvider>
-      </StyledMain>
-      <StyledFooter >
-        Shared Footer
-      </StyledFooter>
-    </StyledContainer>
+    <>
+      <GlobalStyles />
+      <StyledContainer >
+        <StyledHeader >
+          <h1>Shared Header</h1>
+        </StyledHeader>
+        <StyledMain >
+          <QueryClientProvider client={queryClient}>
+            <ReactQueryDevtools initialIsOpen={false}/>
+            {isLoading && <LoaderPage />}
+            {children}
+          </QueryClientProvider>
+        </StyledMain>
+        <StyledFooter >
+          Shared Footer
+        </StyledFooter>
+      </StyledContainer>
+    </>
   );
 };
 
