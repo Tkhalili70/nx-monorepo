@@ -17,7 +17,7 @@ import Input from '../../../../../../libs/ui-kit/src/lib/input/input';
 import Select from '../../../../../../libs/ui-kit/src/lib/select/select';
 import Spinner from '../../../../../../libs/ui-kit/src/lib/spinner/spinner';
 import Heading from '../../../../../../libs/ui-kit/src/lib/heading/heading';
-import Textarea from '../../../../../../libs/ui-kit/src/lib/textarea/textarea';
+import Button from '../../../../../../libs/ui-kit/src/lib/button/button';
 
 export interface CharacterType {
   key: string;
@@ -183,15 +183,20 @@ export default function Home() {
           <option value="Alien">Alien</option>
         </Select>
 
+
         <StyledButtonContainer>
-          <StyledButton
-            type="reset"
-            value="Reset"
-            onClick={() => {
-              setFilterParams({});
-            }}
-          />
-          <StyledButton type="submit" value="Submit" />
+          <Button  type="reset"
+                   value="Reset"
+                   variation='secondary'
+                   size='medium'
+                   onClick={() => {
+                     setFilterParams({});
+                   }}>Reset</Button>
+          <Button  type="submit"
+                   value="Submit"
+                   variation='primary'
+                   size='medium'
+          >Submit</Button>
         </StyledButtonContainer>
       </StyledForm>
       {characterList?.results?.length == 0 && (
