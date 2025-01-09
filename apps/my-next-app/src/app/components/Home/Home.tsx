@@ -17,6 +17,7 @@ import Input from '../../../../../../libs/ui-kit/src/lib/input/input';
 import Select from '../../../../../../libs/ui-kit/src/lib/select/select';
 import Spinner from '../../../../../../libs/ui-kit/src/lib/spinner/spinner';
 import Heading from '../../../../../../libs/ui-kit/src/lib/heading/heading';
+import Textarea from '../../../../../../libs/ui-kit/src/lib/textarea/textarea';
 
 export interface CharacterType {
   key: string;
