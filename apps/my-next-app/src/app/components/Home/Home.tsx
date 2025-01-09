@@ -14,9 +14,8 @@ import {
 } from './styles';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery } from '@tanstack/react-query';
-import { apiGetCharacterList } from '../../services/apiCharacter';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useCharacterList } from '../../hooks/useCharacterList';
 
 export interface CharacterType {
   key: string;
@@ -105,6 +104,7 @@ const schema = z.object({
   gender: z.string().optional(),
 });
 export default function Home() {
+  const [tableData, setTableData] = useState([]);
   const [filterParams, setFilterParams] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -116,15 +116,21 @@ export default function Home() {
   } = useForm<FormSearchInput>({
     resolver: zodResolver(schema),
   });
-  const { isLoading, data: characterList, error } = useQuery(
-    {
-      queryKey:['characters' , queryString],
-      queryFn: () => apiGetCharacterList(queryString),
-      keepPreviousData : true
+  const { isLoading, characterList , error } = useCharacterList(queryString);
+  useEffect(() => {
+    if (characterList?.results?.length > 0) {
+      const temp = characterList.results.map((character: CharacterType) => ({
+        ...character,
+        key: character.id.toString(),
+      }))
+      setTableData(temp);
     }
-  );
+  }, [characterList]);
   if (isLoading) {
     return  'Loading.....'
+  }
+  if (error) {
+    return 'An Error occurred! try again'
   }
 
   async function handleSubmitBtn(data: FormSearchInput) {
@@ -132,7 +138,6 @@ export default function Home() {
       Object.entries(data).filter(([_, value]) => value.trim() !== '')
     );
     setFilterParams(filteredData)
-
   }
   return (
     <>
@@ -186,7 +191,7 @@ export default function Home() {
         <>
           <Table<CharacterType>
             columns={columns}
-            dataSource={characterList?.results}
+            dataSource={tableData}
             loading={isLoading}
             pagination={{
               total: characterList?.info?.count,

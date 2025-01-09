@@ -7,18 +7,11 @@ import {
   EpisodeContainer, EpisodeSection, StyledCharacterContainer, StyledLink, StyledLoading
 } from './styles';
 import Image from "next/image";
-import { useQuery } from '@tanstack/react-query';
-import { apiGetCharacterDetail } from '../../services/apiCharacter';
+import { useCharacterDetail } from '../../hooks/useCharacterDetail';
 
 
 export default function Page({params}: { params: { id: number } }) {
-  const { isLoading, data: characterDetail, error } = useQuery(
-    {
-      queryKey:['characters' , params.id],
-      queryFn: () => apiGetCharacterDetail(params.id),
-      keepPreviousData : true
-    }
-  );
+  const { isLoading,characterDetail, error } = useCharacterDetail(params.id);
 
   if (!params.id) {
     return <div>Error: Invalid character ID.</div>;

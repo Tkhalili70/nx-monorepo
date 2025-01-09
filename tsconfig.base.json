@@ -18,7 +18,8 @@
       "@nx-monorepo/shared-layout": ["libs/shared-layout/src/index.ts"],
       "@nx-monorepo/ui-antd": ["apps/my-next-app/ui-antd/src/index.ts"],
       "@nx-monorepo/ui-antdesign": ["libs/ui-antdesign/src/index.ts"],
-      "@nx-monorepo/ui-components": ["ui-components/src/index.ts"]
+      "@nx-monorepo/ui-components": ["ui-components/src/index.ts"],
+      "@nx-monorepo/ui-kit": ["libs/ui-kit/src/index.ts"]
     },
     "jsx": "react"
   },
