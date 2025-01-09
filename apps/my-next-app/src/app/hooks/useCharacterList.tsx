@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { CharacterType } from '../components/Home/Home';
-import { useLoader } from '../contexts/LoaderContext';
+import { useLoader } from '../contexts/loader-context';
 import { apiGetCharacterList } from '../services/apiCharacter';
 
 export function useCharacterList(initialPage = 1, initialPageSize = 20) {

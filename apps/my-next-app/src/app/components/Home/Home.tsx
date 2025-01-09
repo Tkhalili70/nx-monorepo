@@ -3,7 +3,6 @@ import { Space, Table, TableProps } from 'antd';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
-import { useCharacterList } from '../../hooks/useCharacterList';
 import {
   EmptyResult,
   StyledButton,
@@ -15,6 +14,9 @@ import {
 } from './styles';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from '@tanstack/react-query';
+import { apiGetCharacterList } from '../../services/apiCharacter';
+import { useState } from 'react';
 
 export interface CharacterType {
   key: string;
@@ -48,22 +50,65 @@ export type ValidFieldNames =
   | "status"
   | "species"
   | "gender"
-
+const columns: TableProps<CharacterType>['columns'] = [
+  {
+    title: 'Image',
+    dataIndex: 'image',
+    key: 'image',
+    render: (text) => {
+      return  <Image alt={text} src={text} width={50} height={50}/>
+    },
+    width: '15%',
+  },
+  {
+    title: 'Name',
+    dataIndex: 'name',
+    key: 'name',
+    width: '15%',
+  },
+  {
+    title: 'Status',
+    dataIndex: 'status',
+    key: 'status',
+    render: (text) => {
+      return  <div>{text}</div>
+    },
+    width: '15%',
+  },
+  {
+    title: 'Gender',
+    dataIndex: 'gender',
+    key: 'gender',
+    width: '15%',
+  },
+  {
+    title: 'Species',
+    dataIndex: 'species',
+    key: 'species',
+    width: '15%',
+  },
+  {
+    title: 'Action',
+    key: 'action',
+    width: '15%',
+    render: (_, record) => (
+      <Space size="middle">
+        <Link href={`/character/${record.id}`}>Show Detail</Link>
+      </Space>
+    ),
+  },
+];
+const schema = z.object({
+  name: z.string().min(1, "Name is required"),
+  status: z.string().optional(),
+  species: z.string().optional(),
+  gender: z.string().optional(),
+});
 export default function Home() {
-  const { characterList, pagination, isLoading, updatePagination, applyFilters } = useCharacterList();
-  const schema = z.object({
-    name: z.string().min(1, "Name is required"),
-    status: z.string().optional(),
-    species: z.string().optional(),
-    gender: z.string().optional(),
-    // species: z.enum(["Human", "Alien" , "Mythological Creature"], {
-    //   errorMap: () => ({ message: "Gender is invalid. Choose from Male, Female" }),
-    // }).optional(),
-    // gender: z.enum(["Male", "Female"], {
-    //   errorMap: () => ({ message: "Gender is invalid. Choose from Male, Female" }),
-    // }).optional(),
-  });
-
+  const [filterParams, setFilterParams] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const queryString = new URLSearchParams({ ...filterParams, page: String(currentPage), pageSize: String(pageSize) }).toString();
   const {
     register,
     handleSubmit,
@@ -71,71 +116,24 @@ export default function Home() {
   } = useForm<FormSearchInput>({
     resolver: zodResolver(schema),
   });
-
-
-
-  const columns: TableProps<CharacterType>['columns'] = [
+  const { isLoading, data: characterList, error } = useQuery(
     {
-      title: 'Image',
-      dataIndex: 'image',
-      key: 'image',
-      render: (text) => {
-        return  <Image alt={text} src={text} width={50} height={50}/>
-      },
-      width: '15%',
-    },
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-      width: '15%',
-    },
-    {
-      title: 'Status',
-      dataIndex: 'status',
-      key: 'status',
-      render: (text) => {
-        return  <div>{text}</div>
-      },
-      width: '15%',
-    },
-    {
-      title: 'Gender',
-      dataIndex: 'gender',
-      key: 'gender',
-      width: '15%',
-    },
-    {
-      title: 'Species',
-      dataIndex: 'species',
-      key: 'species',
-      width: '15%',
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      width: '15%',
-      render: (_, record) => (
-        <Space size="middle">
-          <Link href={`/character/${record.id}`}>Show Detail</Link>
-        </Space>
-      ),
-    },
-  ];
+      queryKey:['characters' , queryString],
+      queryFn: () => apiGetCharacterList(queryString),
+      keepPreviousData : true
+    }
+  );
+  if (isLoading) {
+    return  'Loading.....'
+  }
 
   async function handleSubmitBtn(data: FormSearchInput) {
     const filteredData = Object.fromEntries(
       Object.entries(data).filter(([_, value]) => value.trim() !== '')
     );
-    updatePagination(1, 20);
-    applyFilters(filteredData);
+    setFilterParams(filteredData)
 
   }
-
-  const handlePaginationChange = (pagination: any) => {
-    console.log(pagination , 'pagination')
-    updatePagination(pagination.current, pagination.pageSize);
-  };
   return (
     <>
       <StyledForm onSubmit={handleSubmit(handleSubmitBtn)}>
@@ -170,27 +168,35 @@ export default function Home() {
             <option value="Alien">Alien</option>
           </StyledSelect>
         </StyledInputWithError>
+
         <StyledButtonContainer>
           <StyledButton
             type="reset"
             value="Reset"
             onClick={() => {
-              updatePagination(1, 20);
-              applyFilters({})
+              setFilterParams({})
             }}
           />
           <StyledButton type="submit" value="Submit" />
         </StyledButtonContainer>
+
       </StyledForm>
-      {characterList.length == 0 && <EmptyResult>No Data was found!</EmptyResult>}
-      {characterList.length > 0 && (
+      {characterList?.results?.length == 0 && <EmptyResult>No Data was found!</EmptyResult>}
+      {characterList?.results?.length > 0 && (
         <>
           <Table<CharacterType>
             columns={columns}
-            dataSource={characterList}
+            dataSource={characterList?.results}
             loading={isLoading}
-            pagination={pagination}
-            onChange={handlePaginationChange}
+            pagination={{
+              total: characterList?.info?.count,
+              current: currentPage,
+              pageSize,
+              onChange: (page, pageSize) => {
+                setCurrentPage(page);
+                setPageSize(pageSize || 20);
+              },
+            }}
           />
         </>
       )}

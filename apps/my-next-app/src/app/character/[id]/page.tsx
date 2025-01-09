@@ -7,26 +7,32 @@ import {
   EpisodeContainer, EpisodeSection, StyledCharacterContainer, StyledLink, StyledLoading
 } from './styles';
 import Image from "next/image";
-import { useCharacterDetail } from '../../hooks/useCharacterDetail';
-import { useLoader } from '../../contexts/LoaderContext';
+import { useQuery } from '@tanstack/react-query';
+import { apiGetCharacterDetail } from '../../services/apiCharacter';
 
 
 export default function Page({params}: { params: { id: number } }) {
-  const {setIsLoading} = useLoader();
-const { characterDetail , error } = useCharacterDetail(params.id);
-  if (!characterDetail) {
-    setIsLoading(true);
-    return <StyledLoading >Loading character details...</StyledLoading>
-  }else {
-    setIsLoading(false);
+  const { isLoading, data: characterDetail, error } = useQuery(
+    {
+      queryKey:['characters' , params.id],
+      queryFn: () => apiGetCharacterDetail(params.id),
+      keepPreviousData : true
+    }
+  );
+
+  if (!params.id) {
+    return <div>Error: Invalid character ID.</div>;
   }
   if (error) {
     return (
       <>
         <h1>Some Error Occurred!</h1>
-        <div>{error}</div>
+        <div>{error.message}</div>
       </>
     );
+  }
+  if (isLoading) {
+    return <StyledLoading>Loading character details...</StyledLoading>;
   }
   return (
         <>
@@ -36,32 +42,32 @@ const { characterDetail , error } = useCharacterDetail(params.id);
               <Image
                 width={200}
                 height={200}
-                src={characterDetail.image}
-                alt={characterDetail.name}
+                src={characterDetail?.image}
+                alt={characterDetail?.name}
                 className="character-image"
                 loading="lazy"
               />
               <StyledCharacterSec>
                 <StyledCharacterName>
-                  {characterDetail.name}
+                  {characterDetail?.name}
                   <span
-                    className={`status ${characterDetail.status.toLowerCase()}`}
+                    className={`status ${characterDetail.status?.toLowerCase()}`}
                   >
                 {characterDetail.status}
               </span>
                 </StyledCharacterName>
                 <StyledInfoSection>
                   <div className="label">Last Known Location:</div>
-                  <span className="value">{characterDetail.location.name}</span>
+                  <span className="value">{characterDetail?.location?.name}</span>
                 </StyledInfoSection>
                 <StyledInfoSection>
                   <div className="label">First Seen In:</div>
-                  <span className="value">{characterDetail.origin.name}</span>
+                  <span className="value">{characterDetail?.origin?.name}</span>
                 </StyledInfoSection>
               </StyledCharacterSec>
             </StyledCharacterDetail>
             <EpisodeContainer>
-              {characterDetail.episode.map((episode, index) => {
+              {characterDetail.episode?.map((episode, index) => {
                 return <EpisodeSection key={index}>{episode}</EpisodeSection>;
               })}
             </EpisodeContainer>

@@ -2,8 +2,17 @@
 import React, { ReactNode } from 'react';
 import "./styles.scss"
 import LoaderPage from '../../../ui-components/src/lib/LoaderFullPage';
-import { useLoader } from '../../../../apps/my-next-app/src/app/contexts/LoaderContext';
+import { useLoader } from '../../../../apps/my-next-app/src/app/contexts/loader-context';
 import styled from 'styled-components';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries:{
+      staleTime:60 * 1000,
+    }
+  }
+});
 interface SharedLayoutProps {
   children: ReactNode;
 }
@@ -34,8 +43,11 @@ export const SharedLayout: React.FC<SharedLayoutProps> = ({ children }) => {
         <h1>Shared Header</h1>
       </StyledHeader>
       <StyledMain >
+        <QueryClientProvider client={queryClient}>
+          <ReactQueryDevtools initialIsOpen={false}/>
         {isLoading && <LoaderPage />}
         {children}
+        </QueryClientProvider>
       </StyledMain>
       <StyledFooter >
         Shared Footer
