@@ -1,7 +1,7 @@
 "use client"
 import React, { ReactNode } from 'react';
 import "./styles.scss"
-import LoaderPage from '../../../ui-components/src/lib/LoaderFullPage';
+import LoaderPage from '../../../ui-kit/src/lib/spinner/loader-full-page';
 import { useLoader } from '../../../../apps/my-next-app/src/app/contexts/loader-context';
 import styled from 'styled-components';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
