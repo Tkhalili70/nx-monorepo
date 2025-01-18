@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import {
   EmptyResult,
-  StyledButton,
   StyledButtonContainer,
   StyledForm,
 } from './styles';
@@ -18,6 +17,7 @@ import Select from '../../../../../../libs/ui-kit/src/lib/select/select';
 import Spinner from '../../../../../../libs/ui-kit/src/lib/spinner/spinner';
 import Heading from '../../../../../../libs/ui-kit/src/lib/heading/heading';
 import Button from '../../../../../../libs/ui-kit/src/lib/button/button';
+import toast from 'react-hot-toast';
 
 export interface CharacterType {
   key: string;
@@ -132,6 +132,7 @@ export default function Home() {
     return <div> <Spinner /> Loading.....</div>
   }
   if (error) {
+    toast.error(error.message || 'An Error occurred! try again');
     return 'An Error occurred! try again'
   }
 
