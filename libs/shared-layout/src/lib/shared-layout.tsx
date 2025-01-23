@@ -16,6 +16,8 @@ const queryClient = new QueryClient({
 });
 interface SharedLayoutProps {
   children: ReactNode;
+  header?:ReactNode;
+  footer?:ReactNode;
 }
 const StyledContainer = styled.div`
 display: flex;
@@ -35,7 +37,7 @@ const StyledFooter = styled.footer`
 const StyledMain = styled.main`
   padding: 1rem;
 `
-export const SharedLayout: React.FC<SharedLayoutProps> = ({ children }) => {
+export const SharedLayout: React.FC<SharedLayoutProps> = ({ children , header , footer }) => {
   const { isLoading } = useLoader();
 
   return (
@@ -43,7 +45,11 @@ export const SharedLayout: React.FC<SharedLayoutProps> = ({ children }) => {
       <GlobalStyles />
       <StyledContainer >
         <StyledHeader >
-          <h1>Shared Header</h1>
+          {header || (
+            <header style={{ background: '#6200ea', color: '#fff', padding: '1rem' }}>
+              <h1>Shared Header</h1>
+            </header>
+          )}
         </StyledHeader>
         <StyledMain >
           <QueryClientProvider client={queryClient}>
@@ -53,7 +59,12 @@ export const SharedLayout: React.FC<SharedLayoutProps> = ({ children }) => {
           </QueryClientProvider>
         </StyledMain>
         <StyledFooter >
-          Shared Footer
+          {footer || (
+            <header style={{ background: '#6200ea', color: '#fff', padding: '1rem' }}>
+              <h1>Shared Footer</h1>
+            </header>
+          )}
+
         </StyledFooter>
       </StyledContainer>
     </>
